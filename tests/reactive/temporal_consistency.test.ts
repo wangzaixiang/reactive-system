@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ReactiveModule } from '../../src/reactive/reactive_module';
 import {VariableId} from "../../src/reactive/types";
 import {createReactiveModule} from "./utils";
