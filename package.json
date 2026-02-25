@@ -1,0 +1,24 @@
+{
+  "name": "@wangzaixiang/reactive-v3",
+  "version": "3.0.0",
+  "description": "Reactive API v3 - Simplified glitch-free implementation",
+  "main": "dist/src/reactive/reactive_module.js",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0"
+  },
+  "keywords": [
+    "reactive",
+    "dataflow",
+    "computation"
+  ],
+  "author": "",
+  "license": "ISC"
+}
