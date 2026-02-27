@@ -12,6 +12,7 @@ export abstract class ReactiveModuleSchedule extends ReactiveModulePropagation i
     protected readyQueue: Computation[] = [];
     protected runningTasksCount: number = 0;
     protected scheduleScheduled: boolean = false;
+    protected idleWaiters: Array<() => void> = [];
 
     protected constructor(options: ReactiveModuleOptions = {}) {
         super(options);
@@ -46,6 +47,33 @@ export abstract class ReactiveModuleSchedule extends ReactiveModulePropagation i
                 }, 0);
             }
         }
+    }
+
+    /**
+     * 当前是否处于可观测意义上的 idle 状态
+     *
+     * idle 判定：
+     * - readyQueue 为空
+     * - runningTasksCount 为 0
+     * - 没有已安排但未执行的调度（scheduleScheduled=false）
+     */
+    public isIdle(): boolean {
+        return this.readyQueue.length === 0
+            && this.runningTasksCount === 0
+            && this.scheduleScheduled === false;
+    }
+
+    /**
+     * 等待系统进入 idle 状态
+     */
+    public async waitIdle(): Promise<void> {
+        if (this.isIdle()) {
+            return;
+        }
+
+        await new Promise<void>((resolve) => {
+            this.idleWaiters.push(resolve);
+        });
     }
 
     /**
@@ -94,6 +122,22 @@ export abstract class ReactiveModuleSchedule extends ReactiveModulePropagation i
                     this.runningTasksCount--;
                     this._scheduleNext(0); // Continue scheduling, reset indent
                 });
+        }
+
+        this.checkIdle();
+    }
+
+    protected checkIdle(): void {
+        if (!this.isIdle()) {
+            return;
+        }
+        if (this.idleWaiters.length === 0) {
+            return;
+        }
+        const waiters = this.idleWaiters;
+        this.idleWaiters = [];
+        for (const resolve of waiters) {
+            resolve();
         }
     }
 

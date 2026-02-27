@@ -45,6 +45,7 @@
 - **并发限制**: 验证 maxConcurrent 参数生效（例如设为 2，最多 2 个同时运行）
 - **独立分支并发**: 钻石图中 b 和 c 应并发执行（无依赖关系）
 - **依赖顺序保证**: x→y→z 严格按顺序执行（有依赖关系）
+- **waitIdle**: readyQueue 为空 + runningTasksCount=0 + scheduleScheduled=false 时 resolve
 - **激进取消 (Aggressive Abort)**: cause_at 增加时，立即中止 runningTask
   - ✅ **长耗时计算中断**: 正在运行的计算（模拟长耗时 IO）被上游更新中断，不产生旧结果。
   - ✅ **新值正确传播**: 中断后计算被重新调度，并产生基于最新输入的新结果。
